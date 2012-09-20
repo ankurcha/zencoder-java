@@ -16,7 +16,16 @@
 
 package de.bitzeche.video.transcoding.zencoder;
 
-import java.io.StringWriter;
+import com.sun.jersey.api.client.ClientResponse;
+import com.sun.jersey.api.client.UniformInterfaceException;
+import com.sun.jersey.api.client.WebResource;
+import com.sun.jersey.client.apache.ApacheHttpClient;
+import de.bitzeche.video.transcoding.zencoder.enums.ZencoderAPIVersion;
+import de.bitzeche.video.transcoding.zencoder.job.ZencoderJob;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.w3c.dom.Document;
+import org.w3c.dom.Element;
 
 import javax.ws.rs.core.MediaType;
 import javax.xml.parsers.ParserConfigurationException;
@@ -30,24 +39,13 @@ import javax.xml.xpath.XPath;
 import javax.xml.xpath.XPathConstants;
 import javax.xml.xpath.XPathExpressionException;
 import javax.xml.xpath.XPathFactory;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.w3c.dom.Document;
-import org.w3c.dom.Element;
-
-import com.sun.jersey.api.client.ClientResponse;
-import com.sun.jersey.api.client.UniformInterfaceException;
-import com.sun.jersey.api.client.WebResource;
-import com.sun.jersey.client.apache.ApacheHttpClient;
-
-import de.bitzeche.video.transcoding.zencoder.enums.ZencoderAPIVersion;
-import de.bitzeche.video.transcoding.zencoder.job.ZencoderJob;
+import java.io.StringWriter;
+import java.text.ParseException;
 
 public class ZencoderClient implements IZencoderClient {
 
-	private static final Logger LOGGER = LoggerFactory
-			.getLogger(ZencoderClient.class);
+	private static final Logger LOGGER = LoggerFactory.getLogger(ZencoderClient.class);
+    
 	private ApacheHttpClient httpClient;
 	private final String zencoderAPIBaseUrl;
 	private final String zencoderAPIKey;
@@ -55,7 +53,7 @@ public class ZencoderClient implements IZencoderClient {
 	private XPath xPath;
 
 	public ZencoderClient(String zencoderApiKey) {
-		this(zencoderApiKey, ZencoderAPIVersion.API_V1);
+		this(zencoderApiKey, ZencoderAPIVersion.API_V2);
 	}
 
 	public ZencoderClient(String zencoderApiKey, ZencoderAPIVersion apiVersion) {
@@ -72,8 +70,25 @@ public class ZencoderClient implements IZencoderClient {
 		zencoderAPIBaseUrl = zencoderAPIVersion.getBaseUrl();
 	}
 
+    public ZencoderJob getJobDetails(int id) {
+        ZencoderJob job = null;
+        String url = zencoderAPIBaseUrl + "jobs/" + id + ".xml?api_key=" + zencoderAPIKey;
+		Document document = httpClient.resource(url).accept(MediaType.APPLICATION_XML)
+					.header("Content-Type", "application/xml")
+					.get(Document.class);
+        try {
+            job = new ZencoderJob(document);
+        } catch (XPathExpressionException e) {
+            e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+        } catch (ParseException e) {
+            e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+        }
+        return job;
+    }
+
 	@Override
-	public Document createJob(ZencoderJob job) {
+	public ZencoderJob createJob(ZencoderJob job) {
+        ZencoderJob createdJob;
 		Document data;
 		try {
 			data = job.createXML();
@@ -83,14 +98,14 @@ public class ZencoderClient implements IZencoderClient {
 			Element apikey = data.createElement("api_key");
 			apikey.setTextContent(zencoderAPIKey);
 			data.getDocumentElement().appendChild(apikey);
-			Document response = sendPostRequest(
-					"https://app.zencoder.com/api/jobs?format=xml", data);
-			String id = (String) xPath.evaluate("/api-response/job/id",
-					response, XPathConstants.STRING);
+			Document response = sendPostRequest("https://app.zencoder.com/api/jobs?format=xml", data);
+			String id = (String) xPath.evaluate("/api-response/job/id", response, XPathConstants.STRING);
+
 			if (id != null) {
 				job.setJobId(Integer.parseInt(id));
 			}
-			return response;
+            return null;
+//			return response;
 		} catch (ParserConfigurationException e) {
 			LOGGER.error("Parser threw Exception", e);
 		} catch (XPathExpressionException e) {
@@ -108,8 +123,7 @@ public class ZencoderClient implements IZencoderClient {
 	}
 
 	public boolean resubmitJob(int id) {
-		String url = zencoderAPIBaseUrl + "jobs/" + id + "/resubmit?api_key="
-				+ zencoderAPIKey;
+		String url = zencoderAPIBaseUrl + "jobs/" + id + "/resubmit?api_key=" + zencoderAPIKey;
 		ClientResponse res = sendPutRequest(url);
 		return (res.getStatus() == 200 || res.getStatus() == 204);
 	}

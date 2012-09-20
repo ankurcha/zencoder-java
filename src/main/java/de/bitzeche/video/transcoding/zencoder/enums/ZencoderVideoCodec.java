@@ -17,5 +17,5 @@
 package de.bitzeche.video.transcoding.zencoder.enums;
 
 public enum ZencoderVideoCodec {
-	h264, vp6, vp8, theora, mpeg4, wmv;
+	H264, VP6, VP8, THEORA, MPEG4, WMV
 }

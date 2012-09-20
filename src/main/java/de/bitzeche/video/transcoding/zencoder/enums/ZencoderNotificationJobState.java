@@ -17,11 +17,5 @@
 package de.bitzeche.video.transcoding.zencoder.enums;
 
 public enum ZencoderNotificationJobState {
-	
-	PROCESSING, FINISHED, FAILED;
-	
-	public String getJobStateString() {
-		return this.name().toLowerCase();
-	}
-
+	PROCESSING, FINISHED, FAILED
 }

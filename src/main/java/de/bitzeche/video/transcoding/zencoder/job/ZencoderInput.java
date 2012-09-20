@@ -1,32 +1,21 @@
-/**
- * Copyright (C) 2012 Bitzeche GmbH <info@bitzeche.de>
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *         http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
-
 package de.bitzeche.video.transcoding.zencoder.job;
 
 import de.bitzeche.video.transcoding.zencoder.enums.ZencoderAudioCodec;
 import de.bitzeche.video.transcoding.zencoder.enums.ZencoderVideoCodec;
 
-public class ZencoderOutput {
+/**
+ * User: achauhan
+ * Date: 9/18/12
+ */
+public class ZencoderInput {
+
     public enum State {
         PENDING, WAITING, PROCESSING, FINISHED, FAILED, CANCELLED
     }
 
-    int audioBitRateInKbps;
+    int audioBitrateInKbps;
     ZencoderAudioCodec audioCodec;
-    long audioSampleRate;
+    int audioSampleRate;
     int channels;
     long durationInMs;
     long fileSizeInBytes;
@@ -34,21 +23,21 @@ public class ZencoderOutput {
     double frameRate;
     int height;
     long id;
-    String label;
+    boolean privacy;
+    long jobId;
     State state;
-    int totalBitRateInKbps;
-    String url;
-    int videoBitrateInKbps;
+    int totalBitrateInKbps;
     ZencoderVideoCodec videoCodec;
     int width;
     String md5Checksum;
 
-    public int getAudioBitRateInKbps() {
-        return audioBitRateInKbps;
+
+    public int getAudioBitrateInKbps() {
+        return audioBitrateInKbps;
     }
 
-    public void setAudioBitRateInKbps(int audioBitRateInKbps) {
-        this.audioBitRateInKbps = audioBitRateInKbps;
+    public void setAudioBitrateInKbps(int audioBitrateInKbps) {
+        this.audioBitrateInKbps = audioBitrateInKbps;
     }
 
     public ZencoderAudioCodec getAudioCodec() {
@@ -59,11 +48,11 @@ public class ZencoderOutput {
         this.audioCodec = audioCodec;
     }
 
-    public long getAudioSampleRate() {
+    public int getAudioSampleRate() {
         return audioSampleRate;
     }
 
-    public void setAudioSampleRate(long audioSampleRate) {
+    public void setAudioSampleRate(int audioSampleRate) {
         this.audioSampleRate = audioSampleRate;
     }
 
@@ -123,12 +112,20 @@ public class ZencoderOutput {
         this.id = id;
     }
 
-    public String getLabel() {
-        return label;
+    public boolean isPrivacy() {
+        return privacy;
     }
 
-    public void setLabel(String label) {
-        this.label = label;
+    public void setPrivacy(boolean privacy) {
+        this.privacy = privacy;
+    }
+
+    public long getJobId() {
+        return jobId;
+    }
+
+    public void setJobId(long jobId) {
+        this.jobId = jobId;
     }
 
     public State getState() {
@@ -139,28 +136,12 @@ public class ZencoderOutput {
         this.state = state;
     }
 
-    public int getTotalBitRateInKbps() {
-        return totalBitRateInKbps;
+    public int getTotalBitrateInKbps() {
+        return totalBitrateInKbps;
     }
 
-    public void setTotalBitRateInKbps(int totalBitRateInKbps) {
-        this.totalBitRateInKbps = totalBitRateInKbps;
-    }
-
-    public String getUrl() {
-        return url;
-    }
-
-    public void setUrl(String url) {
-        this.url = url;
-    }
-
-    public int getVideoBitrateInKbps() {
-        return videoBitrateInKbps;
-    }
-
-    public void setVideoBitrateInKbps(int videoBitrateInKbps) {
-        this.videoBitrateInKbps = videoBitrateInKbps;
+    public void setTotalBitrateInKbps(int totalBitrateInKbps) {
+        this.totalBitrateInKbps = totalBitrateInKbps;
     }
 
     public ZencoderVideoCodec getVideoCodec() {

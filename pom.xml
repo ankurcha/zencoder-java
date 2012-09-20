@@ -105,7 +105,14 @@
 			<artifactId>jersey-apache-client</artifactId>
 			<version>1.4</version>
 		</dependency>
-	</dependencies>
+
+        <dependency>
+            <groupId>org.codehaus.jackson</groupId>
+            <artifactId>jackson-mapper-asl</artifactId>
+            <version>1.9.9</version>
+        </dependency>
+
+    </dependencies>
 	<build>
 		<outputDirectory>${basedir}/${target.dir}/classes</outputDirectory>
 		<testOutputDirectory>${basedir}/${target.dir}/test-classes</testOutputDirectory>
